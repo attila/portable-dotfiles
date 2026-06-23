@@ -1,0 +1,15 @@
+#!/bin/sh
+#
+# Pre-commit hook: verify formatting with dprint.
+# Activate with: git config core.hooksPath .githooks
+
+if ! command -v dprint >/dev/null 2>&1; then
+    echo "error: dprint not found. Install it via Homebrew: brew install dprint"
+    exit 1
+fi
+
+if ! dprint check; then
+    echo ""
+    echo "Formatting check failed. Run 'dprint fmt' to fix."
+    exit 1
+fi

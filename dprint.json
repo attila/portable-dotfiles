@@ -1,0 +1,31 @@
+{
+  "$schema": "https://dprint.dev/schemas/v0.json",
+  "newLineKind": "lf",
+  "json": {
+    "indentWidth": 2,
+    "lineWidth": 80,
+    "array.preferSingleLine": true
+  },
+  "markdown": {
+    "lineWidth": 80,
+    "textWrap": "always"
+  },
+  "toml": {
+    "lineWidth": 80
+  },
+  "includes": ["**/*.{json,md,toml}"],
+  "excludes": [
+    "**/.git",
+    "**/.idea",
+    "./LICENSE",
+    "./tmp/**",
+    "**/nono/.config/nono/packages/**",
+    "**/nono/.config/nono/profile-drafts/**",
+    "**/nono/.config/nono/pack-update-hints.json"
+  ],
+  "plugins": [
+    "https://plugins.dprint.dev/json-0.21.3.wasm",
+    "https://plugins.dprint.dev/markdown-0.22.1.wasm",
+    "https://plugins.dprint.dev/toml-0.7.0.wasm"
+  ]
+}

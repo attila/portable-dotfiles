@@ -1,0 +1,8 @@
+"$schema" = 'https://starship.rs/config-schema.json'
+
+# Note that this configuration is not enabled with zsh is in use.
+# Zephyr already provides a Starship configuration.
+
+[sudo]
+style = 'bold green'
+disabled = false

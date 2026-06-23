@@ -1,0 +1,30 @@
+# Patch/diff artifacts.
+*.patch
+*.diff
+*.orig
+*.rej
+interdiff*.txt
+
+# emacs artifacts.
+*~
+\#*\#
+
+# VI swap file
+*.swp
+
+# Hidden files.
+.DS*
+.project
+.idea
+
+# Windows links.
+*.lnk
+
+# Temporary files.
+tmp*
+coverage
+report*.json
+pruned
+.cursor/mcp.json
+
+**/.claude/settings.local.json

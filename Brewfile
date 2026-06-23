@@ -1,0 +1,33 @@
+# Font casks
+cask "font-fantasque-sans-mono"
+cask "font-victor-mono"
+
+# Casks
+cask "claude-code"
+cask "docker-desktop"
+cask "ghostty"
+
+# Brew
+brew "antidote"
+brew "awscli"
+brew "bzip2"
+brew "dprint"
+brew "fzf"
+brew "git"
+brew "git-crypt"
+brew "graphviz"
+brew "grep"
+brew "gzip"
+brew "jq"
+brew "neovim"
+brew "pwgen"
+brew "rtk"
+brew "shellcheck"
+brew "starship"
+brew "stow"
+brew "telnet"
+brew "tfenv"
+brew "tree"
+brew "unzip"
+brew "xz"
+brew "zsh-completions"
