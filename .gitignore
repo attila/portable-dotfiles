@@ -10,6 +10,9 @@ Thumbs.db
 .Spotlight-V100
 .Trashes
 
+# Editor and IDE files
+.idea/
+
 # Lockfiles
 Brewfile.lock.json
 
