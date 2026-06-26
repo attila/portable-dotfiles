@@ -41,7 +41,7 @@ checked-in policy packs, security docs, platform standards, or agent extensions.
 Active instruction layers, the highest governance first:
 
 | Layer        | Typical source                                                                     | Owns                                                                     |
-|--------------|------------------------------------------------------------------------------------|--------------------------------------------------------------------------|
+| ------------ | ---------------------------------------------------------------------------------- | ------------------------------------------------------------------------ |
 | Organisation | Shared policy tools, checked-in org packs, security/release docs, agent extensions | Compliance, security, legal, release, production, approved tooling       |
 | Team/project | Repo `AGENTS.md`/`CLAUDE.md`, contribution docs, CI config, architecture docs      | Architecture, test strategy, package boundaries, local workflows         |
 | Personal     | User-level `AGENTS.md`/`CLAUDE.md`, lore, session preferences                      | Interaction style, verification discipline, planning shape, review style |
