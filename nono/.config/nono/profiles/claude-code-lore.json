@@ -1,0 +1,18 @@
+{
+  "extends": ["claude-code", "public-dotfiles-mirror", "root"],
+  "filesystem": {
+    "read": ["$HOME/portable-dotfiles/claude"]
+  },
+  "meta": {
+    "name": "claude-code-lore",
+    "description": "Claude Code with shared dotfiles access and Anthropic API access"
+  },
+  "network": {
+    "allow_domain": [
+      "api.anthropic.com",
+      "mcp-proxy.anthropic.com",
+      "*.claude.ai",
+      "platform.claude.com"
+    ]
+  }
+}

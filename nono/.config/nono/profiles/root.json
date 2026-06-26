@@ -1,0 +1,190 @@
+{
+  "environment": {
+    "allow_vars": [
+      "CARGO_HOME",
+      "CLICOLOR",
+      "COLORTERM",
+      "COMMAND_MODE",
+      "COREPACK_*",
+      "EDITOR",
+      "GH_CONFIG_DIR",
+      "GH_DEBUG",
+      "GH_FORCE_TTY",
+      "GH_HOST",
+      "GH_MDWIDTH",
+      "GH_NO_EXTENSION_UPDATE_NOTIFIER",
+      "GH_NO_UPDATE_NOTIFIER",
+      "GH_PAGER",
+      "GH_PROMPT_DISABLED",
+      "GH_REPO",
+      "GH_REST_API_VERSION",
+      "GIT_AUTHOR_DATE",
+      "GIT_AUTHOR_EMAIL",
+      "GIT_AUTHOR_NAME",
+      "GIT_COMMITTER_DATE",
+      "GIT_COMMITTER_EMAIL",
+      "GIT_COMMITTER_NAME",
+      "GIT_CONFIG_*",
+      "GIT_EDITOR",
+      "GIT_PAGER",
+      "GIT_TERMINAL_PROMPT",
+      "GLAMOUR_STYLE",
+      "GNUPGHOME",
+      "GPG_TTY",
+      "HISTSIZE",
+      "HOME",
+      "LANG",
+      "LANGUAGE",
+      "LC_*",
+      "LESS",
+      "LOGNAME",
+      "LS_COLORS",
+      "MANPATH",
+      "MOON_*",
+      "NODE_ENV",
+      "OLDPWD",
+      "PAGER",
+      "PATH",
+      "PROTO_*",
+      "PWD",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONPATH",
+      "PYTHONUNBUFFERED",
+      "RUSTUP_HOME",
+      "RUSTUP_TOOLCHAIN",
+      "RUST_BACKTRACE",
+      "RUST_LOG",
+      "SAVEHIST",
+      "SHELL",
+      "TERM",
+      "TERM_PROGRAM",
+      "TERM_PROGRAM_VERSION",
+      "TZ",
+      "USER",
+      "UV_CACHE_DIR",
+      "UV_LINK_MODE",
+      "UV_PROJECT_ENVIRONMENT",
+      "UV_PYTHON",
+      "UV_PYTHON_INSTALL_DIR",
+      "UV_TOOL_DIR",
+      "VIRTUAL_ENV",
+      "VISUAL",
+      "XDG_*",
+      "ZDOTDIR"
+    ]
+  },
+  "filesystem": {
+    "read": [
+      "$HOME/.config/gh",
+      "$HOME/.local/share/nono-helpers",
+      "$HOME/portable-dotfiles/agents",
+      {
+        "path": "/home/linuxbrew/.linuxbrew",
+        "when": "linux"
+      },
+      {
+        "path": "/usr/include",
+        "when": "linux"
+      },
+      {
+        "path": "/usr/lib",
+        "when": "linux"
+      },
+      {
+        "path": "/usr/libexec",
+        "when": "linux"
+      },
+      {
+        "path": "/usr/local/MacGPG2",
+        "when": "macos"
+      }
+    ],
+    "read_file": ["/etc/passwd", "$HOME/.prototools"],
+    "allow": [
+      {
+        "path": "$HOME/.cache/dprint",
+        "when": "linux"
+      },
+      "$HOME/.cache/uv",
+      "$HOME/.cargo",
+      "$HOME/.gnupg",
+      "$HOME/.local/share/moon",
+      "$HOME/.proto",
+      {
+        "path": "$HOME/Library/Caches/BytecodeAlliance.wasmtime",
+        "when": "macos"
+      },
+      "/tmp",
+      "/var/tmp"
+    ],
+    "bypass_protection": ["$HOME/.gnupg"],
+    "unix_socket": ["$HOME/.gnupg/S.gpg-agent"]
+  },
+  "meta": {
+    "name": "root",
+    "description": "Shared base: common toolchain filesystem/network grants, curated environment allowlist, and open-URL defaults"
+  },
+  "network": {
+    "allow_domain": [
+      "*.crates.io",
+      "crates.io",
+      "plugins.dprint.dev",
+      "dprint.dev",
+      "*.pkg.github.com",
+      "api.github.com",
+      "codeload.github.com",
+      "docs.github.com",
+      "github.blog",
+      "github.com",
+      "*.actions.githubusercontent.com",
+      "actions.githubusercontent.com",
+      "objects.githubusercontent.com",
+      "pkg-npm.githubusercontent.com",
+      "storage.googleapis.com",
+      "moonrepo.dev",
+      "nodejs.org",
+      "registry.nono.sh",
+      "*.npmjs.org",
+      "www.npmjs.com",
+      "pypi.org",
+      "files.pythonhosted.org",
+      "*.blob.core.windows.net",
+      "zod.dev"
+    ],
+    "open_port": [11434]
+  },
+  "open_urls": {
+    "allow_localhost": true,
+    "allow_origins": [
+      "https://api.anthropic.com",
+      "https://docs.anthropic.com",
+      "https://chatgpt.com",
+      "https://platform.claude.com",
+      "https://claude.ai",
+      "https://claude.com",
+      "https://status.claude.com",
+      "https://crates.io",
+      "https://docs.rs",
+      "https://dprint.dev",
+      "https://docs.github.com",
+      "https://gist.github.com",
+      "https://github.blog",
+      "https://github.com",
+      "https://raw.githubusercontent.com",
+      "https://moonrepo.dev",
+      "https://developer.mozilla.org",
+      "https://nodejs.org",
+      "https://www.npmjs.com",
+      "https://api.openai.com",
+      "https://auth.openai.com",
+      "https://developers.openai.com",
+      "https://platform.openai.com",
+      "https://pypi.org",
+      "https://stackoverflow.com",
+      "https://zod.dev"
+    ]
+  },
+  "unsafe_macos_seatbelt_rules": [
+    "(allow file-read* (literal \"/Users/username\"))"
+  ]
+}

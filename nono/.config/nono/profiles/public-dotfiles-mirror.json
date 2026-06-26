@@ -1,0 +1,9 @@
+{
+  "filesystem": {
+    "allow": ["$HOME/portable-dotfiles"]
+  },
+  "meta": {
+    "name": "public-dotfiles-mirror",
+    "description": "Write access to the portable-dotfiles checkout"
+  }
+}

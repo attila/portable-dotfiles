@@ -1,0 +1,48 @@
+#!/bin/sh
+# Wrapper that injects --import=proxy-bootstrap.mjs into every node invocation
+# when HTTPS_PROXY is set (i.e. inside the nono sandbox). Outside the sandbox
+# it is a transparent pass-through to the real node.
+#
+# Reason this exists rather than NODE_OPTIONS injection by nono: nono blocks
+# NODE_OPTIONS at both the inherited-env sanitiser and the env_credentials
+# destination validator. Process-level NODE_OPTIONS set inside the sandbox
+# propagates to descendants normally — nono only sanitises at the entry
+# boundary. So a PATH-shim wrapper that exports NODE_OPTIONS internally is
+# the available surface.
+
+set -e
+
+bootstrap="${HOME}/.local/share/nono-helpers/proxy-bootstrap.mjs"
+wrapper_dir="$(cd "$(dirname "$0")" && pwd)"
+
+# Strip the wrapper dir from PATH so the real node resolves below.
+new_path=""
+IFS=:
+for dir in $PATH; do
+    [ "$dir" = "$wrapper_dir" ] && continue
+    [ -z "$new_path" ] && new_path="$dir" || new_path="$new_path:$dir"
+done
+unset IFS
+PATH="$new_path"
+export PATH
+
+# Prefer proto's shim if present so .prototools-pinned per-project node
+# versions are honoured. The shim itself does the directory-tree lookup
+# for .prototools and execs the right version. Only fall through to a
+# PATH-based search when proto isn't installed.
+if [ -x "${HOME}/.proto/shims/node" ]; then
+    real_node="${HOME}/.proto/shims/node"
+else
+    real_node="$(command -v node || true)"
+    if [ -z "$real_node" ] || [ "$real_node" = "$0" ]; then
+        echo "nono-helpers/bin/node wrapper: real node not found on PATH after self-strip" >&2
+        exit 127
+    fi
+fi
+
+if [ -n "${HTTPS_PROXY:-}${https_proxy:-}" ] && [ -r "$bootstrap" ]; then
+    NODE_OPTIONS="--import=${bootstrap}${NODE_OPTIONS:+ ${NODE_OPTIONS}}"
+    export NODE_OPTIONS
+fi
+
+exec "$real_node" "$@"

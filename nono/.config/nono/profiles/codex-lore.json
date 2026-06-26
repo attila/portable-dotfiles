@@ -1,0 +1,33 @@
+{
+  "extends": ["codex", "public-dotfiles-mirror", "root"],
+  "filesystem": {
+    "allow_file": [
+      "$HOME/Library/Keychains/login.keychain-db",
+      "$HOME/Library/Keychains/metadata.keychain-db"
+    ],
+    "bypass_protection": [
+      "$HOME/Library/Keychains/login.keychain-db",
+      "$HOME/Library/Keychains/metadata.keychain-db"
+    ],
+    "read": ["$HOME/portable-dotfiles/codex"]
+  },
+  "meta": {
+    "name": "codex-lore",
+    "description": "Codex CLI with shared dotfiles access, OpenAI access, keychain access, and GPG seatbelt rules"
+  },
+  "network": {
+    "allow_domain": [
+      "*.chatgpt.com",
+      "chatgpt.com",
+      "mcp.context7.com",
+      "api.openai.com",
+      "auth.openai.com",
+      "developers.openai.com",
+      "platform.openai.com"
+    ]
+  },
+  "unsafe_macos_seatbelt_rules": [
+    "(allow mach-lookup (global-name \"com.apple.SecurityServer\"))",
+    "(allow network-outbound (literal \"/Users/username/.gnupg/S.gpg-agent\"))"
+  ]
+}

@@ -30,6 +30,12 @@ typeset -gU path fpath
 
 # Set the list of directories that zsh searches for commands.
 path=(
+    # nono-helpers shim: wrapper for `node` that injects
+    # --import=proxy-bootstrap.mjs when HTTPS_PROXY is set. Outside the
+    # sandbox the wrapper is a transparent pass-through; safe to prepend
+    # unconditionally. Must come first so it shadows Homebrew and proto node.
+    $HOME/.local/share/nono-helpers/bin
+
     $HOME/{,s}bin(N)
     $HOME/.local/{,s}bin(N)
 

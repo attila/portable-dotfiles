@@ -1,0 +1,64 @@
+{
+  "extends": ["default", "public-dotfiles-mirror", "root"],
+  "filesystem": {
+    "allow": [
+      "$HOME/.config/crush",
+      "$HOME/.config/nono/profile-drafts",
+      "$HOME/.local/share/crush"
+    ],
+    "read": [
+      "$HOME/.config/nono/packages",
+      "$HOME/.config/nono/profiles",
+      "$HOME/portable-dotfiles/crush"
+    ],
+    "read_file": ["$HOME/.config/AGENTS.md"]
+  },
+  "groups": {
+    "include": [
+      "git_config",
+      "linux_sysfs_read",
+      "nix_runtime",
+      "node_runtime",
+      "python_runtime",
+      "rust_runtime",
+      "unlink_protection",
+      {
+        "name": "user_caches_linux",
+        "when": "linux"
+      },
+      {
+        "name": "user_caches_macos",
+        "when": "macos"
+      }
+    ]
+  },
+  "meta": {
+    "name": "crush-cerebras",
+    "description": "Crush CLI with Cerebras API access through nono credential proxy"
+  },
+  "network": {
+    "allow_domain": ["api.cerebras.ai", "charm.land"],
+    "credentials": ["cerebras"],
+    "custom_credentials": {
+      "cerebras": {
+        "upstream": "https://api.cerebras.ai",
+        "credential_key": "cerebras_api_key",
+        "inject_mode": "header",
+        "inject_header": "Authorization",
+        "credential_format": "Bearer {}",
+        "env_var": "CEREBRAS_API_KEY",
+        "endpoint_rules": [{
+          "method": "*",
+          "path": "/v1/**"
+        }]
+      }
+    }
+  },
+  "unsafe_macos_seatbelt_rules": [
+    "(allow mach-lookup (global-name \"com.apple.SecurityServer\"))",
+    "(allow network-outbound (literal \"/Users/username/.gnupg/S.gpg-agent\"))"
+  ],
+  "workdir": {
+    "access": "readwrite"
+  }
+}
