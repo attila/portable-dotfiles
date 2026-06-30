@@ -10,8 +10,12 @@
   "network": {
     "allow_domain": [
       "api.anthropic.com",
+      "docs.anthropic.com",
+      "www.anthropic.com",
       "mcp-proxy.anthropic.com",
       "*.claude.ai",
+      "code.claude.com",
+      "docs.claude.com",
       "platform.claude.com"
     ]
   }

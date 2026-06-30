@@ -129,6 +129,7 @@
       "*.crates.io",
       "crates.io",
       "plugins.dprint.dev",
+      "docs.rs",
       "dprint.dev",
       "*.pkg.github.com",
       "api.github.com",
@@ -148,6 +149,8 @@
       "www.npmjs.com",
       "pypi.org",
       "files.pythonhosted.org",
+      "static.rust-lang.org",
+      "sh.rustup.rs",
       "*.blob.core.windows.net",
       "zod.dev"
     ],
