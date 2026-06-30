@@ -141,6 +141,7 @@
       "actions.githubusercontent.com",
       "objects.githubusercontent.com",
       "pkg-npm.githubusercontent.com",
+      "release-assets.githubusercontent.com",
       "storage.googleapis.com",
       "moonrepo.dev",
       "nodejs.org",
