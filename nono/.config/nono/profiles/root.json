@@ -137,6 +137,7 @@
       "docs.github.com",
       "github.blog",
       "github.com",
+      "uploads.github.com",
       "*.actions.githubusercontent.com",
       "actions.githubusercontent.com",
       "objects.githubusercontent.com",
