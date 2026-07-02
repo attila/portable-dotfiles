@@ -36,6 +36,8 @@ brew "gzip"
 brew "jq"
 # JetBrains coding agent CLI
 brew "junie"
+# CLI for Mermaid library
+brew "mermaid-cli"
 # Ambitious Vim-fork focused on extensibility and agility
 brew "neovim"
 # Open-source, cross-platform JavaScript runtime environment
