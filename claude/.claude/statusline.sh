@@ -10,7 +10,11 @@ set -euo pipefail
 
 input=$(cat)
 
-IFS=$'\t' read -r model effort dir ctx cost p5 r5 p7 <<<"$(jq -r '
+# unit separator (\x1f), not a tab: bash's `read` treats space/tab/newline as
+# collapsible IFS whitespace even when IFS is narrowed to just "\t", so an
+# empty field (e.g. absent effort.level) merges with its neighbour and shifts
+# every later field left. \x1f is not IFS whitespace, so empty fields survive.
+IFS=$'\x1f' read -r model effort dir ctx cost p5 r5 p7 <<<"$(jq -r '
   [
     .model.display_name // "?",
     .effort.level // "",
@@ -20,7 +24,7 @@ IFS=$'\t' read -r model effort dir ctx cost p5 r5 p7 <<<"$(jq -r '
     (.rate_limits.five_hour.used_percentage // -1 | floor),
     (.rate_limits.five_hour.resets_at // 0),
     (.rate_limits.seven_day.used_percentage // -1 | floor)
-  ] | @tsv' 2>/dev/null <<<"$input")"
+  ] | join("")' 2>/dev/null <<<"$input")"
 
 # malformed or empty stdin leaves every field blank; fail closed with no output
 # rather than crash on the empty-array read below (bash 3.2, macOS's default,
