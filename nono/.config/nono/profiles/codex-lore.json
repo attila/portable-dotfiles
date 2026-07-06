@@ -1,14 +1,20 @@
 {
   "extends": ["codex", "public-dotfiles-mirror", "root"],
   "filesystem": {
-    "allow_file": [
-      "$HOME/Library/Keychains/login.keychain-db",
-      "$HOME/Library/Keychains/metadata.keychain-db"
-    ],
-    "bypass_protection": [
-      "$HOME/Library/Keychains/login.keychain-db",
-      "$HOME/Library/Keychains/metadata.keychain-db"
-    ],
+    "allow_file": [{
+      "path": "$HOME/Library/Keychains/login.keychain-db",
+      "when": "macos"
+    }, {
+      "path": "$HOME/Library/Keychains/metadata.keychain-db",
+      "when": "macos"
+    }],
+    "bypass_protection": [{
+      "path": "$HOME/Library/Keychains/login.keychain-db",
+      "when": "macos"
+    }, {
+      "path": "$HOME/Library/Keychains/metadata.keychain-db",
+      "when": "macos"
+    }],
     "read": ["$HOME/portable-dotfiles/codex"]
   },
   "meta": {

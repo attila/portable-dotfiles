@@ -99,7 +99,10 @@
         "when": "macos"
       }
     ],
-    "read_file": ["/etc/passwd", "$HOME/.prototools"],
+    "read_file": ["/etc/passwd", "$HOME/.prototools", {
+      "path": "$HOME/portable-dotfiles/zsh/.zshenv",
+      "when": "linux"
+    }],
     "allow": [
       {
         "path": "$HOME/.cache/dprint",
@@ -117,7 +120,10 @@
       "/tmp",
       "/var/tmp"
     ],
-    "bypass_protection": ["$HOME/.gnupg"],
+    "bypass_protection": ["$HOME/.gnupg", {
+      "path": "$HOME/portable-dotfiles/zsh/.zshenv",
+      "when": "linux"
+    }],
     "unix_socket": ["$HOME/.gnupg/S.gpg-agent"]
   },
   "meta": {
