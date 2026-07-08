@@ -14,6 +14,7 @@ export ZDOTDIR=${ZDOTDIR:-$XDG_CONFIG_HOME/zsh}
 export EDITOR=vi
 export VISUAL=vi
 export PAGER=less
+export LESS='-g -i -M -R -w -z-4'
 
 export HISTSIZE=50000
 export SAVEHIST=50000
