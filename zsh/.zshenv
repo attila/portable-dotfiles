@@ -25,6 +25,9 @@ export HOMEBREW_NO_UPGRADE_AUTO_UPDATES_CASKS=1
 
 # Proto
 export PROTO_HOME="$HOME/.proto"
+# proto's offline probe uses raw TCP checks that fail in nono's proxy-only
+# network mode; normal downloads still go through the proxy.
+export PROTO_OFFLINE=false
 
 # Ensure path arrays do not contain duplicates.
 typeset -gU path fpath
