@@ -148,6 +148,7 @@
       "*.actions.githubusercontent.com",
       "actions.githubusercontent.com",
       "objects.githubusercontent.com",
+      "pkg-containers.githubusercontent.com",
       "pkg-npm.githubusercontent.com",
       "raw.githubusercontent.com",
       "release-assets.githubusercontent.com",
