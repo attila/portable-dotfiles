@@ -144,6 +144,7 @@
       "github.blog",
       "github.com",
       "uploads.github.com",
+      "ghcr.io",
       "*.actions.githubusercontent.com",
       "actions.githubusercontent.com",
       "objects.githubusercontent.com",
