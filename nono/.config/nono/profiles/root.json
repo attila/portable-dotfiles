@@ -108,6 +108,7 @@
         "path": "$HOME/.cache/dprint",
         "when": "linux"
       },
+      "$XDG_CACHE_HOME/gh",
       "$HOME/.cache/uv",
       "$HOME/.cargo",
       "$HOME/.gnupg",
