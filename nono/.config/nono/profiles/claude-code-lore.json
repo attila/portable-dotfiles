@@ -13,6 +13,7 @@
       "docs.anthropic.com",
       "www.anthropic.com",
       "mcp-proxy.anthropic.com",
+      "claude.ai",
       "*.claude.ai",
       "code.claude.com",
       "docs.claude.com",
