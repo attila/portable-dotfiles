@@ -163,6 +163,8 @@
       "files.pythonhosted.org",
       "static.rust-lang.org",
       "sh.rustup.rs",
+      "tuist.dev",
+      "docs.tuist.dev",
       "*.blob.core.windows.net",
       "zod.dev"
     ],
@@ -197,6 +199,7 @@
       "https://platform.openai.com",
       "https://pypi.org",
       "https://stackoverflow.com",
+      "https://docs.tuist.dev",
       "https://zod.dev"
     ]
   },
