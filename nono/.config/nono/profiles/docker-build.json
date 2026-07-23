@@ -1,0 +1,44 @@
+{
+  "filesystem": {
+    "allow": ["$HOME/.docker/buildx"],
+    "allow_file": [{
+      "path": "$HOME/.docker/run/docker.sock",
+      "when": "macos"
+    }, {
+      "path": "/var/run/docker.sock",
+      "when": "linux"
+    }],
+    "bypass_protection": [
+      "$HOME/.docker/buildx",
+      "$HOME/.docker/cli-plugins",
+      "$HOME/.docker/contexts/meta",
+      {
+        "path": "$HOME/.docker/run/docker.sock",
+        "when": "macos"
+      },
+      {
+        "path": "/var/run/docker.sock",
+        "when": "linux"
+      }
+    ],
+    "read": ["$HOME/.docker/cli-plugins", "$HOME/.docker/contexts/meta"],
+    "unix_socket": [{
+      "path": "$HOME/.docker/run/docker.sock",
+      "when": "macos"
+    }, {
+      "path": "/var/run/docker.sock",
+      "when": "linux"
+    }]
+  },
+  "meta": {
+    "name": "docker-build",
+    "description": "Shared Docker build grants for public container and package registries"
+  },
+  "network": {
+    "allow_domain": [
+      "production.cloudflare.docker.com",
+      "auth.docker.io",
+      "registry-1.docker.io"
+    ]
+  }
+}
