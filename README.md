@@ -41,6 +41,36 @@ keychain access, and macOS seatbelt rules. The included profiles cover a shared
 base profile, public-dotfiles access, and agent-specific profiles for Codex,
 Claude Code, and Crush.
 
+### Docker Daemon Access
+
+> **Warning:** The standalone `docker-build` profile grants access to the Docker
+> daemon. This bypasses nono's host-filesystem policy: an agent can ask Docker
+> to bind-mount a path that nono blocks and then read or modify that path from a
+> container. Treat a session with this profile as having the host access
+> available to the Docker daemon, not the narrower access shown by nono.
+
+Add `docker-build` to an agent profile's `extends` array only for sessions that
+need it. For example, use `"extends": ["codex-lore", "docker-build"]`. The
+profile supports builds using public Docker Hub, GHCR, npm, and PyPI
+dependencies; it deliberately leaves Docker client credentials blocked.
+
+Contain the daemon authority rather than relying on the agent to avoid unsafe
+commands:
+
+1. Use a dedicated remote BuildKit endpoint and grant the sandbox access to that
+   endpoint instead of the Docker daemon. This is the preferred option for
+   build-only workflows.
+2. Use a separate disposable VM or daemon with host-directory sharing disabled.
+   A compromised build then controls that environment rather than the
+   workstation filesystem.
+3. Put a fail-closed API proxy in front of Docker and reject container creation
+   and bind mounts. Validate the complete BuildKit protocol before relying on
+   this: upgraded or gRPC sessions can escape incomplete HTTP endpoint filters.
+
+Rootless Docker reduces daemon privilege but still exposes files readable by the
+host user. Restricting the `docker` CLI command is also insufficient because
+software can call the daemon socket directly.
+
 Before using the profiles, adapt the machine-local pieces:
 
 - Install the matching nono package profiles for the agent CLIs you use, such as
