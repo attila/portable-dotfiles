@@ -1,0 +1,11 @@
+{
+  "temperature": 318,
+  "data_units_written": 1001000,
+  "percent_used": 1,
+  "critical_warning": 1,
+  "media_errors": 0,
+  "unsafe_shutdowns": 17,
+  "num_err_log_entries": 0,
+  "warning_temp_time": 0,
+  "critical_comp_time": 0
+}

@@ -11,6 +11,7 @@ edits, support requests, and feature requests are not accepted.
 | --------------- | --------------------------------------------------------------------------------------------------------------- |
 | `.ai/skills`    | Agent guidance for tools that understand repository-local instructions.                                         |
 | `agents`        | Shared agent instructions exposed through Codex and Claude module links.                                        |
+| `bin`           | Small user commands, including NVMe snapshot trend reporting.                                                   |
 | `claude`        | [Claude Code](https://code.claude.com/docs/en/overview) instruction link pointing at the shared agent guidance. |
 | `codex`         | [Codex](https://github.com/openai/codex) instruction link pointing at the shared agent guidance.                |
 | `dprint`        | [dprint](https://dprint.dev/) formatter configuration used by the repository.                                   |
@@ -119,6 +120,7 @@ Install GNU Stow, then stow the modules you want from the repository root.
 brew bundle
 stow ghostty
 stow git
+stow bin
 stow starship
 stow tmux
 stow zsh
@@ -126,3 +128,17 @@ stow zsh
 
 Use `stow -D <module>` to remove a module's symlinks and `stow -R <module>` to
 restow after local edits.
+
+## NVMe Health Report
+
+The `bin` module installs `nvme-health-report`, a POSIX shell and `jq` command
+that reports trends from timestamped `nvme smart-log` JSON snapshots:
+
+```sh
+nvme-health-report /path/to/snapshots
+```
+
+Snapshots must use UTC filenames in the form `YYYY-MM-DDTHH-MM-SSZ.json`. The
+source directory may be local or mounted; transport is outside the command. Run
+`nvme-health-report --help` for the input contract, columns, and marker
+semantics.

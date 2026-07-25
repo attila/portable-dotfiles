@@ -1,0 +1,267 @@
+#!/bin/sh
+set -eu
+
+usage()
+{
+    status=$1
+
+    printf '%s\n' \
+        "usage: nvme-health-report <snapshot-directory>" \
+        "" \
+        "Report trends from timestamped nvme smart-log JSON snapshots." \
+        "" \
+        "The directory may be local, mounted, or remote-host-local when the" \
+        "command is invoked through SSH. Output is tab-separated." \
+        "" \
+        "Snapshot filenames: YYYY-MM-DDTHH-MM-SSZ.json (UTC)" \
+        "" \
+        "Columns:" \
+        "  TIMESTAMP           snapshot time from the filename (UTC)" \
+        "  TEMP_C              composite temperature in Celsius" \
+        "  TOTAL_WRITTEN_GB    lifetime writes in decimal gigabytes" \
+        "  INTERVAL_H          hours since the preceding snapshot" \
+        "  WRITE_GB_DAY        interval writes normalised to GB/day" \
+        "  USED_PCT            reported percentage of endurance used" \
+        "  CRITICAL_WARNING    critical-warning state transition" \
+        "  MEDIA_ERRORS        media-error counter change" \
+        "  UNSAFE_SHUTDOWNS    unsafe-shutdown counter change" \
+        "  ERROR_LOG_ENTRIES   error-log-entry counter change" \
+        "  WARNING_TEMP_TIME   warning-temperature-time counter change" \
+        "  CRITICAL_TEMP_TIME  critical-temperature-time counter change" \
+        "" \
+        "Markers:" \
+        "  -       no preceding sample is available" \
+        "  RESET   a monotonic counter regressed; no negative rate is shown" \
+        "  A->B    a state value changed from A to B"
+
+    exit "$status"
+}
+
+case ${1-} in
+    -h | --help)
+        [ "$#" -eq 1 ] || usage 2 >&2
+        usage 0
+        ;;
+esac
+
+[ "$#" -eq 1 ] || usage 2 >&2
+
+snapshot_dir=$1
+
+if [ ! -d "$snapshot_dir" ]; then
+    echo "nvme-health-report: not a directory: $snapshot_dir" >&2
+    exit 1
+fi
+
+set -- "$snapshot_dir"/*.json
+
+if [ ! -e "$1" ]; then
+    echo "nvme-health-report: no JSON snapshots found: $snapshot_dir" >&2
+    exit 1
+fi
+
+for snapshot do
+    if [ ! -f "$snapshot" ]; then
+        echo "nvme-health-report: not a regular file: $snapshot" >&2
+        exit 1
+    fi
+done
+
+jq -nr '
+    def snapshot_name:
+        split("/")[-1];
+
+    def timestamp:
+        . as $file
+        | (snapshot_name) as $name
+        | if ($name | test(
+            "^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}-[0-9]{2}-[0-9]{2}Z[.]json$"
+        ))
+          then
+              try (
+                  $name
+                  | sub("[.]json$"; "")
+                  | capture(
+                      "^(?<date>[0-9]{4}-[0-9]{2}-[0-9]{2})T"
+                      + "(?<hour>[0-9]{2})-(?<minute>[0-9]{2})-"
+                      + "(?<second>[0-9]{2})Z$"
+                  )
+                  | "\(.date)T\(.hour):\(.minute):\(.second)Z" as $iso
+                  | ($iso | fromdateiso8601) as $epoch
+                  | if ($epoch | strftime("%Y-%m-%dT%H:%M:%SZ")) == $iso
+                    then $epoch
+                    else error("invalid timestamp")
+                    end
+              )
+              catch error("\($file): invalid timestamp")
+          else error("\($file): invalid snapshot filename")
+          end;
+
+    def required_fields:
+        [
+            "temperature",
+            "data_units_written",
+            "percent_used",
+            "critical_warning",
+            "media_errors",
+            "unsafe_shutdowns",
+            "num_err_log_entries",
+            "warning_temp_time",
+            "critical_comp_time"
+        ];
+
+    def validate:
+        . as $sample
+        | if ($sample.value | type) != "object"
+          then error("\($sample.file): snapshot must contain a JSON object")
+          else .
+          end
+        | reduce required_fields[] as $field (.;
+              if (.value | has($field) | not)
+              then error("\(.file): missing field: \($field)")
+              elif (
+                  (.value[$field] | type) != "number"
+                  or .value[$field] < 0
+                  or (.value[$field] | floor) != .value[$field]
+              )
+              then error("\(.file): field must be a non-negative integer: \($field)")
+              else .
+              end
+          )
+        | {
+              file,
+              name: (.file | snapshot_name | sub("[.]json$"; "")),
+              timestamp: (.file | timestamp),
+              temperature: .value.temperature,
+              data_units_written: .value.data_units_written,
+              percent_used: .value.percent_used,
+              critical_warning: .value.critical_warning,
+              media_errors: .value.media_errors,
+              unsafe_shutdowns: .value.unsafe_shutdowns,
+              num_err_log_entries: .value.num_err_log_entries,
+              warning_temp_time: .value.warning_temp_time,
+              critical_comp_time: .value.critical_comp_time
+          };
+
+    def rounded($factor):
+        (. * $factor | round) / $factor;
+
+    def monotonic_change($previous; $current):
+        if $current < $previous
+        then "RESET"
+        elif $current == $previous
+        then "0"
+        else "+\($current - $previous)"
+        end;
+
+    def state_change($previous; $current):
+        if $current == $previous
+        then "0"
+        else "\($previous)->\($current)"
+        end;
+
+    def row($samples; $index):
+        $samples[$index] as $current
+        | if $index == 0
+          then [
+              $current.name,
+              (($current.temperature - 273.15) | rounded(10)),
+              (($current.data_units_written * 512000 / 1000000000)
+                  | rounded(1000)),
+              "-",
+              "-",
+              $current.percent_used,
+              "-",
+              "-",
+              "-",
+              "-",
+              "-",
+              "-"
+          ]
+          else
+              $samples[$index - 1] as $previous
+              | ($current.timestamp - $previous.timestamp) as $elapsed
+              | if $elapsed <= 0
+                then error(
+                    "\($current.file): timestamp does not follow previous sample"
+                )
+                else .
+                end
+              | (
+                  $current.data_units_written
+                  - $previous.data_units_written
+              ) as $write_delta
+              | [
+                    $current.name,
+                    (($current.temperature - 273.15) | rounded(10)),
+                    (($current.data_units_written * 512000 / 1000000000)
+                        | rounded(1000)),
+                    (($elapsed / 3600) | rounded(100)),
+                    (
+                        if $write_delta < 0
+                        then "RESET"
+                        else (
+                            $write_delta * 512000 / 1000000000
+                            * 86400 / $elapsed
+                            | rounded(1000)
+                        )
+                        end
+                    ),
+                    $current.percent_used,
+                    state_change(
+                        $previous.critical_warning;
+                        $current.critical_warning
+                    ),
+                    monotonic_change(
+                        $previous.media_errors;
+                        $current.media_errors
+                    ),
+                    monotonic_change(
+                        $previous.unsafe_shutdowns;
+                        $current.unsafe_shutdowns
+                    ),
+                    monotonic_change(
+                        $previous.num_err_log_entries;
+                        $current.num_err_log_entries
+                    ),
+                    monotonic_change(
+                        $previous.warning_temp_time;
+                        $current.warning_temp_time
+                    ),
+                    monotonic_change(
+                        $previous.critical_comp_time;
+                        $current.critical_comp_time
+                    )
+                ]
+          end
+        | @tsv;
+
+    [
+        inputs
+        | {file: input_filename, value: .}
+        | validate
+    ] as $samples
+    | if ($samples | length) == 0
+      then error("no snapshots supplied")
+      else $samples | sort_by(.timestamp)
+      end
+    | . as $sorted
+    | (
+        [
+            "TIMESTAMP",
+            "TEMP_C",
+            "TOTAL_WRITTEN_GB",
+            "INTERVAL_H",
+            "WRITE_GB_DAY",
+            "USED_PCT",
+            "CRITICAL_WARNING",
+            "MEDIA_ERRORS",
+            "UNSAFE_SHUTDOWNS",
+            "ERROR_LOG_ENTRIES",
+            "WARNING_TEMP_TIME",
+            "CRITICAL_TEMP_TIME"
+        ]
+        | @tsv
+      ),
+      (range(0; $sorted | length) | row($sorted; .))
+' -- "$@"
