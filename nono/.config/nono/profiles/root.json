@@ -83,6 +83,10 @@
         "when": "linux"
       },
       {
+        "path": "/srv/monitoring",
+        "when": "linux"
+      },
+      {
         "path": "/usr/include",
         "when": "linux"
       },
