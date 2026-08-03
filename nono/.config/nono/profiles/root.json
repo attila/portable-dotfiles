@@ -167,6 +167,8 @@
       "www.npmjs.com",
       "pypi.org",
       "files.pythonhosted.org",
+      "*.snapcraft.io",
+      "snapcraft.io",
       "static.rust-lang.org",
       "sh.rustup.rs",
       "registry.terraform.io",
@@ -205,6 +207,7 @@
       "https://developers.openai.com",
       "https://platform.openai.com",
       "https://pypi.org",
+      "https://snapcraft.io",
       "https://stackoverflow.com",
       "https://docs.tuist.dev",
       "https://zod.dev"
