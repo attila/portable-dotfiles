@@ -1,0 +1,190 @@
+#!/bin/sh
+set -u
+
+usage()
+{
+    status=$1
+
+    printf '%s\n' \
+        "usage: gpg-signing-diagnose" \
+        "" \
+        "Capture GPG commit-signing diagnostics without restarting the agent." \
+        "Run immediately after a failed commit, before retrying or restarting nono."
+
+    exit "$status"
+}
+
+case ${1-} in
+    -h | --help)
+        [ "$#" -eq 1 ] || usage 2 >&2
+        usage 0
+        ;;
+esac
+
+[ "$#" -eq 0 ] || usage 2 >&2
+
+run_with_timeout()
+{
+    timeout_seconds=$1
+    shift
+    ticks=0
+    max_ticks=$((timeout_seconds * 10))
+
+    "$@" &
+    command_pid=$!
+
+    while kill -0 "$command_pid" 2>/dev/null; do
+        if [ "$ticks" -ge "$max_ticks" ]; then
+            printf 'probe_timeout=%ss\n' "$timeout_seconds" >&2
+            kill -TERM "$command_pid" 2>/dev/null || :
+            sleep 1
+            kill -KILL "$command_pid" 2>/dev/null || :
+            break
+        fi
+
+        sleep 0.1
+        ticks=$((ticks + 1))
+    done
+
+    wait "$command_pid"
+}
+
+print_value()
+{
+    name=$1
+    value=$2
+
+    if [ -n "$value" ]; then
+        printf '%s=%s\n' "$name" "$value"
+    else
+        printf '%s=<unset>\n' "$name"
+    fi
+}
+
+printf '%s\n' \
+    "Agent prompt:" \
+    "Diagnose this GPG commit-signing failure from the evidence below." \
+    "Do not restart nono or gpg-agent. Identify the failing layer and recommend" \
+    "the smallest verified fix. Include the original Git stderr above this report." \
+    "" \
+    "== System =="
+
+printf 'timestamp_utc=%s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
+printf 'system=%s\n' "$(uname -srm)"
+
+if command -v nono >/dev/null 2>&1; then
+    nono --version 2>&1 | sed -n '1s/^/nono_version=/p'
+else
+    printf '%s\n' "nono_version=<unavailable>"
+fi
+
+if command -v git >/dev/null 2>&1; then
+    git --version 2>&1 | sed -n '1s/^/git_version=/p'
+    signing_key=$(git config --get user.signingkey 2>/dev/null || :)
+    commit_gpgsign=$(git config --get commit.gpgsign 2>/dev/null || :)
+    gpg_format=$(git config --get gpg.format 2>/dev/null || :)
+else
+    printf '%s\n' "git_version=<unavailable>"
+    signing_key=
+    commit_gpgsign=
+    gpg_format=
+fi
+
+gpg_format=${gpg_format:-openpgp}
+gpg_program=
+
+if command -v git >/dev/null 2>&1; then
+    gpg_program=$(git config --get "gpg.$gpg_format.program" 2>/dev/null || :)
+
+    if [ -z "$gpg_program" ] && [ "$gpg_format" = openpgp ]; then
+        gpg_program=$(git config --get gpg.program 2>/dev/null || :)
+    fi
+fi
+
+if [ -z "$gpg_program" ]; then
+    case $gpg_format in
+        openpgp) gpg_program=gpg ;;
+        ssh) gpg_program=ssh-keygen ;;
+        x509) gpg_program=gpgsm ;;
+        *) gpg_program=gpg ;;
+    esac
+fi
+
+printf '%s\n' "" "== Git signing configuration =="
+print_value user.signingkey "$signing_key"
+print_value commit.gpgsign "$commit_gpgsign"
+print_value gpg.format "$gpg_format"
+print_value gpg.program "$gpg_program"
+
+printf '%s\n' "" "== GPG environment =="
+print_value GNUPGHOME "${GNUPGHOME-}"
+print_value GPG_TTY "${GPG_TTY-}"
+print_value SSH_AUTH_SOCK "${SSH_AUTH_SOCK-}"
+
+if command -v "$gpg_program" >/dev/null 2>&1; then
+    "$gpg_program" --version 2>&1 | sed -n '1s/^/gpg_version=/p'
+else
+    printf '%s\n' "gpg_version=<unavailable>"
+fi
+
+if command -v gpgconf >/dev/null 2>&1; then
+    gpg_homedir=$(gpgconf --list-dirs homedir 2>/dev/null || :)
+    agent_socket=$(gpgconf --list-dirs agent-socket 2>/dev/null || :)
+else
+    gpg_homedir=
+    agent_socket=
+fi
+
+print_value gpg_homedir "$gpg_homedir"
+print_value agent_socket "$agent_socket"
+
+if [ -n "$agent_socket" ] && [ -S "$agent_socket" ]; then
+    printf '%s\n' "agent_socket_state=socket"
+    ls -ld "$agent_socket" 2>&1
+
+    case $(uname -s) in
+        Darwin) stat -f 'agent_socket_inode=%i' "$agent_socket" 2>&1 || : ;;
+        Linux) stat -c 'agent_socket_inode=%i' "$agent_socket" 2>&1 || : ;;
+    esac
+elif [ -n "$agent_socket" ] && [ -e "$agent_socket" ]; then
+    printf '%s\n' "agent_socket_state=not-a-socket"
+    ls -ld "$agent_socket" 2>&1
+else
+    printf '%s\n' "agent_socket_state=missing"
+fi
+
+printf '%s\n' "" "== Existing-agent probe =="
+
+if [ -z "$agent_socket" ]; then
+    printf '%s\n' "agent_probe_skipped=no-agent-socket-path"
+elif ! command -v gpg-connect-agent >/dev/null 2>&1; then
+    printf '%s\n' "agent_probe_skipped=gpg-connect-agent-unavailable"
+else
+    agent_output=$(run_with_timeout 10 \
+        gpg-connect-agent --raw-socket "$agent_socket" \
+        "GETINFO pid" "KEYINFO --list" /bye 2>&1)
+    agent_status=$?
+    printf 'agent_probe_exit=%s\n' "$agent_status"
+    [ -z "$agent_output" ] || printf '%s\n' "$agent_output"
+fi
+
+printf '%s\n' "" "== Signing probe =="
+
+if [ "$gpg_format" != openpgp ]; then
+    printf 'signing_probe_skipped=gpg.format=%s\n' "$gpg_format"
+elif ! command -v "$gpg_program" >/dev/null 2>&1; then
+    printf '%s\n' "signing_probe_skipped=gpg-program-unavailable"
+elif [ -n "$signing_key" ]; then
+    signing_output=$(run_with_timeout 10 "$gpg_program" \
+        --no-autostart --status-fd=2 -bsau "$signing_key" \
+        </dev/null 2>&1 >/dev/null)
+    signing_status=$?
+    printf 'signing_probe_exit=%s\n' "$signing_status"
+    [ -z "$signing_output" ] || printf '%s\n' "$signing_output"
+else
+    signing_output=$(run_with_timeout 10 "$gpg_program" \
+        --no-autostart --status-fd=2 -bsa </dev/null 2>&1 >/dev/null)
+    signing_status=$?
+    printf 'signing_probe_exit=%s\n' "$signing_status"
+    [ -z "$signing_output" ] || printf '%s\n' "$signing_output"
+fi
