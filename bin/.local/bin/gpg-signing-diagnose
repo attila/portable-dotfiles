@@ -71,6 +71,7 @@ printf '%s\n' \
 
 printf 'timestamp_utc=%s\n' "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"
 printf 'system=%s\n' "$(uname -srm)"
+system_name=$(uname -s)
 
 if command -v nono >/dev/null 2>&1; then
     nono --version 2>&1 | sed -n '1s/^/nono_version=/p'
@@ -139,21 +140,26 @@ print_value gpg_homedir "$gpg_homedir"
 print_value agent_socket "$agent_socket"
 
 if [ -n "$agent_socket" ] && [ -S "$agent_socket" ]; then
+    agent_socket_state=socket
     printf '%s\n' "agent_socket_state=socket"
     ls -ld "$agent_socket" 2>&1
 
-    case $(uname -s) in
+    case $system_name in
         Darwin) stat -f 'agent_socket_inode=%i' "$agent_socket" 2>&1 || : ;;
         Linux) stat -c 'agent_socket_inode=%i' "$agent_socket" 2>&1 || : ;;
     esac
 elif [ -n "$agent_socket" ] && [ -e "$agent_socket" ]; then
+    agent_socket_state=not-a-socket
     printf '%s\n' "agent_socket_state=not-a-socket"
     ls -ld "$agent_socket" 2>&1
 else
+    agent_socket_state=missing
     printf '%s\n' "agent_socket_state=missing"
 fi
 
 printf '%s\n' "" "== Existing-agent probe =="
+
+agent_probe_status=
 
 if [ -z "$agent_socket" ]; then
     printf '%s\n' "agent_probe_skipped=no-agent-socket-path"
@@ -164,9 +170,56 @@ else
         gpg-connect-agent --raw-socket "$agent_socket" \
         "GETINFO pid" "KEYINFO --list" /bye 2>&1)
     agent_status=$?
+    agent_probe_status=$agent_status
     printf 'agent_probe_exit=%s\n' "$agent_status"
     [ -z "$agent_output" ] || printf '%s\n' "$agent_output"
 fi
+
+printf '%s\n' "" "== macOS listener inspection =="
+
+pgrep_status=
+lsof_status=
+lsof_output=
+
+if [ "$system_name" != Darwin ]; then
+    printf '%s\n' \
+        "gpg_agent_pgrep_skipped=non-Darwin" \
+        "agent_socket_lsof_skipped=non-Darwin"
+else
+    if command -v pgrep >/dev/null 2>&1; then
+        pgrep_output=$(pgrep -l gpg-agent 2>&1)
+        pgrep_status=$?
+        printf 'gpg_agent_pgrep_exit=%s\n' "$pgrep_status"
+        [ -z "$pgrep_output" ] || printf '%s\n' "$pgrep_output"
+    else
+        printf '%s\n' "gpg_agent_pgrep_skipped=unavailable"
+    fi
+
+    if [ -z "$agent_socket" ]; then
+        printf '%s\n' "agent_socket_lsof_skipped=no-agent-socket-path"
+    elif command -v lsof >/dev/null 2>&1; then
+        lsof_output=$(lsof -- "$agent_socket" 2>&1)
+        lsof_status=$?
+        printf 'agent_socket_lsof_exit=%s\n' "$lsof_status"
+        [ -z "$lsof_output" ] || printf '%s\n' "$lsof_output"
+    else
+        printf '%s\n' "agent_socket_lsof_skipped=unavailable"
+    fi
+fi
+
+# A successful connection is conclusive; after a failed connection, lsof is
+# the socket-listener authority and pgrep remains supporting evidence only.
+agent_classification=undetermined
+if [ "$agent_probe_status" = 0 ]; then
+    agent_classification=agent-reachable
+elif [ "$agent_socket_state" = socket ] && [ -n "$agent_probe_status" ]; then
+    if [ "$lsof_status" = 1 ] && [ -z "$lsof_output" ]; then
+        agent_classification=dead-agent-or-stale-socket
+    elif [ "$lsof_status" = 0 ] && [ -n "$lsof_output" ]; then
+        agent_classification=socket-access-or-binding
+    fi
+fi
+printf 'agent_classification=%s\n' "$agent_classification"
 
 printf '%s\n' "" "== Signing probe =="
 

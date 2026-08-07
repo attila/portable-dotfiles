@@ -112,6 +112,19 @@ Node-based SDKs may bypass the sandbox proxy.
 Agents that understand repository-local skills can use
 `onboard-portable-dotfiles` to guide a selective setup.
 
+### GPG Signing Diagnostics
+
+`gpg-signing-diagnose` captures agent-socket and signing evidence without
+starting, restarting, or killing `gpg-agent`. On macOS it also reports whether
+the socket has a listener and classifies common stale-socket and access
+failures.
+
+Run it immediately after a failed signed commit, before retrying:
+
+```sh
+gpg-signing-diagnose
+```
+
 ## Install
 
 Install GNU Stow, then stow the modules you want from the repository root.

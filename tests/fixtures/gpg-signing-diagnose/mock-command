@@ -1,0 +1,86 @@
+#!/bin/sh
+set -u
+
+command_name=${0##*/}
+
+if [ "$command_name" = sleep ]; then
+    exit 0
+fi
+
+printf '%s' "$command_name" >> "$MOCK_LOG"
+for argument do
+    printf '\t%s' "$argument" >> "$MOCK_LOG"
+done
+printf '\n' >> "$MOCK_LOG"
+
+case $command_name in
+    git)
+        case $* in
+            "config --get user.signingkey") printf '%s\n' TEST-SIGNING-KEY ;;
+            "config --get commit.gpgsign") printf '%s\n' true ;;
+            "config --get gpg.format") printf '%s\n' openpgp ;;
+            "config --get gpg.openpgp.program")
+                if [ -n "${MOCK_FORMAT_PROGRAM-}" ]; then
+                    printf '%s\n' "$MOCK_FORMAT_PROGRAM"
+                else
+                    exit 1
+                fi
+                ;;
+            "config --get gpg.program") printf '%s\n' gpg ;;
+            *) exit 1 ;;
+        esac
+        ;;
+    gpg | gpg-format)
+        if [ "${1-}" = --version ]; then
+            printf '%s\n' "gpg (GnuPG) test-version"
+            exit 0
+        fi
+
+        if [ "${MOCK_SIGNING_MODE-}" = hang ]; then
+            printf '%s\n' "$$" > "$MOCK_HANG_PID_FILE"
+            trap 'exit 143' TERM
+            while :; do :; done
+        fi
+
+        cat >/dev/null
+        printf '%s\n' "[GNUPG:] FAILURE sign test" >&2
+        exit 2
+        ;;
+    gpgconf)
+        case ${2-} in
+            homedir) printf '%s\n' /test/gnupg ;;
+            agent-socket) printf '%s\n' "${MOCK_AGENT_SOCKET:-/test/gnupg/S.gpg-agent}" ;;
+            *) exit 1 ;;
+        esac
+        ;;
+    gpg-connect-agent)
+        if [ "${MOCK_AGENT_MODE-}" = unreachable ]; then
+            printf '%s\n' "ERR 67109133 can't connect to the agent" >&2
+            exit 2
+        fi
+        printf '%s\n' "D 4242" "OK"
+        ;;
+    uname)
+        case $* in
+            -s) printf '%s\n' "${MOCK_OS:-Darwin}" ;;
+            -srm) printf '%s\n' "${MOCK_OS:-Darwin} test-release test-machine" ;;
+            *) exit 1 ;;
+        esac
+        ;;
+    pgrep)
+        if [ "${MOCK_LISTENER_MODE-}" = none ]; then
+            exit 1
+        fi
+        printf '%s\n' "4242 gpg-agent"
+        ;;
+    lsof)
+        if [ "${MOCK_LISTENER_MODE-}" = none ]; then
+            exit 1
+        fi
+        printf '%s\n' "gpg-agent 4242 test 7u unix test-socket"
+        ;;
+    *)
+        printf 'unexpected mock command: %s\n' "$command_name" >&2
+        exit 127
+        ;;
+esac
