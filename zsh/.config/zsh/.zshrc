@@ -27,6 +27,10 @@ if [[ -z ${HOMEBREW_PREFIX} ]]; then
         HOMEBREW_PREFIX=/usr/local
     fi
 fi
+
+# Homebrew-generated completions must be discoverable before ez-compinit runs.
+fpath=("${HOMEBREW_PREFIX}/share/zsh/site-functions" $fpath)
+
 antidote_zsh="${HOMEBREW_PREFIX}/opt/antidote/share/antidote/antidote.zsh"
 [[ -r $antidote_zsh ]] && source "$antidote_zsh"
 
