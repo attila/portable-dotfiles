@@ -1,0 +1,11 @@
+{
+  "extends": ["claude-code-lore"],
+  "filesystem": {
+    "allow": ["$HOME/.claude-personal"],
+    "deny": ["$HOME/.claude", "$HOME/.claude.pre-split-backup"]
+  },
+  "meta": {
+    "name": "claude-code-personal",
+    "description": "Claude Code with shared dotfiles access for personal work"
+  }
+}

@@ -1,7 +1,10 @@
 {
   "extends": ["claude-code", "public-dotfiles-mirror", "root"],
+  "environment": {
+    "allow_vars": ["CLAUDE_CONFIG_DIR"]
+  },
   "filesystem": {
-    "read": ["$HOME/portable-dotfiles/claude"]
+    "read": ["$HOME/portable-dotfiles/claude", "$HOME/.config/claude"]
   },
   "meta": {
     "name": "claude-code-lore",
