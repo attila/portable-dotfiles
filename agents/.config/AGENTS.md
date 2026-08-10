@@ -251,6 +251,15 @@ Applies in chat as well as artefacts.
 
 ## Output & cadence
 
+- **Pick the register by reader, not by subject.** If I read it — chat replies,
+  summaries, decision asks, drafts of comments/tickets/messages — write it
+  human: outcome first, plain words, short sentences, no internal vocabulary
+  (unit labels, decision numbers, artefact kinds) unless I asked about it.
+  Dense, precise prose belongs only in records that agents and the archive read:
+  ledgers, plans, specs, state files.
+- **No length ratchet.** Size each message or entry to its content, never to the
+  length of the previous one of its kind. A class of output (changelog, ticket,
+  reply) trending longer over time is drift — cut, don't match.
 - **Bite-sized messages, up to two beats per message.** Cap synthesis at
   ~100–150 words unless I've explicitly asked for a long-form deliverable.
   Long-form work belongs in committed artefacts, not chat.
