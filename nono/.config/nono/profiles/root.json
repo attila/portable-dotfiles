@@ -115,6 +115,7 @@
       "$XDG_CACHE_HOME/gh",
       "$HOME/.cache/uv",
       "$HOME/.cargo",
+      "$HOME/.config/tfenv",
       "$HOME/.gnupg",
       "$HOME/.local/share/moon",
       "$HOME/.proto",
