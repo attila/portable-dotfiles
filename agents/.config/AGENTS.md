@@ -279,9 +279,8 @@ Applies in chat as well as artefacts.
   ```
   Stop after each decision and wait for a numeric reply. Capture all decisions
   before editing.
-- **Never call the AskUserQuestion tool — I will never respond to it.**
-  Present options as a numbered list in
-  chat and wait for a numeric reply:
+- **Never call the AskUserQuestion tool — I will never respond to it.** Present
+  options as a numbered list in chat and wait for a numeric reply:
   ```
   **Proposed options:**
 
@@ -349,9 +348,8 @@ Keep this file policy-sized, not handbook-sized.
 
 ## Don'ts
 
-- **Never call the AskUserQuestion tool.** I will not respond to prompts
-  raised there — always fall back to a numbered list in chat (see Output &
-  cadence).
+- **Never call the AskUserQuestion tool.** I will not respond to prompts raised
+  there — always fall back to a numbered list in chat (see Output & cadence).
 - **Don't generate READMEs, design docs, summaries, or `*.md` files** unless I
   ask. Work from the conversation context, not intermediate files.
 - **You MUST NOT inspect shell history, private credentials, keychains, browser
