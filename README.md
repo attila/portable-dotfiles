@@ -112,6 +112,74 @@ Node-based SDKs may bypass the sandbox proxy.
 Agents that understand repository-local skills can use
 `onboard-portable-dotfiles` to guide a selective setup.
 
+### Claude Background-Session Daemon
+
+Claude Code's `claude --bg` dispatches a background worker session, and
+`claude agents` lists and reconnects to them. Both reach a per-home supervisor
+over a unix socket. Under nono, connecting to that socket is mediated separately
+from filesystem access, so a client needs an explicit `unix_socket_subtree`
+grant even when it can already read the containing directory.
+
+No shipped profile carries this grant, because the socket directory name embeds
+a digest of your own configuration directory path. Derive yours:
+
+```sh
+printf '%s' "$HOME/.claude" | shasum -a 256 | cut -c1-8
+```
+
+The socket directory is `/tmp/cc-daemon-$(id -u)/<that-digest>`. Substitute your
+own `CLAUDE_CONFIG_DIR` path if you do not use the default. Add a connect-only
+grant for it to the client profile:
+
+```json
+{
+  "filesystem": {
+    "unix_socket_subtree": [
+      { "path": "/tmp/cc-daemon-1000/0123abcd", "when": "macos" }
+    ]
+  }
+}
+```
+
+Host the supervisor inside the sandbox, under the same profile its clients use,
+adding the bind-capable grant as a launcher flag:
+
+```sh
+nono run --allow-cwd --profile <client-profile> \
+  --allow-unix-socket-subtree-bind /tmp/cc-daemon-1000/0123abcd \
+  -- claude daemon run
+```
+
+> **Why not run the daemon on the host?** Workers are children of the supervisor
+> and inherit its sandbox policy and environment rather than the dispatching
+> client's. A supervisor started from an unsandboxed shell runs its workers with
+> full host authority, which removes the sandbox for every client holding the
+> connect grant. Host it under the narrowest profile any of its clients use.
+
+Three behaviours are worth knowing before relying on this:
+
+- Any process inside a granted sandbox can list, dispatch, stop, and read the
+  logs of that home's background sessions. The grant's boundary is the
+  configuration home, not the individual session.
+- nono attaches a unix-socket grant only when the path already exists. A grant
+  for a missing path is skipped with a log line naming the path, and the sandbox
+  then runs without that grant and without an error. Because `/tmp` is cleared
+  on reboot and the supervisor removes its socket directory when it stops,
+  create the directory before starting either the host or a client.
+- A client that dispatches with no host running auto-starts a transient
+  supervisor whose nono proxy dies with the client. Its workers reach state
+  `blocked` and log `Unable to connect to API (ConnectionRefused)`. Start the
+  host first. A supervisor you start deliberately runs until you stop it; the
+  idle timeout applies only to the transient kind. Stop either kind with
+  `claude daemon stop --any`, because plain `claude daemon stop` refuses
+  whenever no background service is installed. A stopping supervisor removes its
+  socket directory, which is why the directory has to be recreated before the
+  next start.
+
+Inside a sandbox the `claude daemon status` header reads `not running` because
+process-information isolation blocks its process probe. The `bg sessions` block
+on the same output is accurate.
+
 ### GPG Signing Diagnostics
 
 `gpg-signing-diagnose` captures agent-socket and signing evidence without
