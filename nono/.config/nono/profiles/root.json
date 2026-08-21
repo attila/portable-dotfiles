@@ -138,6 +138,9 @@
   },
   "network": {
     "allow_domain": [
+      "*.claude.site",
+      "claude.site",
+      "*.claudeusercontent.com",
       "*.crates.io",
       "crates.io",
       "*.crt.sh",
@@ -196,6 +199,7 @@
       "https://chatgpt.com",
       "https://platform.claude.com",
       "https://claude.ai",
+      "https://claude.site",
       "https://claude.com",
       "https://status.claude.com",
       "https://crates.io",
