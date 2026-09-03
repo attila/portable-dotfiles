@@ -254,9 +254,10 @@ Applies in chat as well as artefacts.
 - **Pick the register by reader, not by subject.** If I read it — chat replies,
   summaries, decision asks, drafts of comments/tickets/messages — write it
   human: outcome first, plain words, short sentences, no internal vocabulary
-  (unit labels, decision numbers, artefact kinds) unless I asked about it.
-  Dense, precise prose belongs only in records that agents and the archive read:
-  ledgers, plans, specs, state files.
+  (unit labels, decision numbers, artefact kinds) unless I asked about it. No
+  headline-teaser sentences ("three real problems, one of which is ours") —
+  state the findings, don't trail them. Dense, precise prose belongs only in
+  records that agents and the archive read: ledgers, plans, specs, state files.
 - **Assume split attention.** I run several sessions at once and may arrive at
   any message without the session's context. Expand every internal reference on
   first use in each message — plan/requirement IDs (U7, R18), ticket numbers,
@@ -268,7 +269,9 @@ Applies in chat as well as artefacts.
   reply) trending longer over time is drift — cut, don't match.
 - **Bite-sized messages, up to two beats per message.** Cap synthesis at
   ~100–150 words unless I've explicitly asked for a long-form deliverable.
-  Long-form work belongs in committed artefacts, not chat.
+  Long-form work belongs in committed artefacts, not chat. Investigation and
+  debugging wrap-ups are synthesis, not long-form deliverables — split
+  multi-finding results into the decision walkthrough format below.
 - **Up to two commands at a time** when asking me to run things. Batching
   multiple commands hides errors and forces scroll-and-paste.
 - **Decision walkthroughs** for reviews, doc audits, or planning forks with 3+
@@ -286,7 +289,9 @@ Applies in chat as well as artefacts.
   Stop after each decision and wait for a numeric reply. Capture all decisions
   before editing.
 - **Never call the AskUserQuestion tool — I will never respond to it.** Present
-  options as a numbered list in chat and wait for a numeric reply:
+  options as a numbered list in chat and wait for a numeric reply. Numbered
+  options must be mutually exclusive choices, never sequential next steps —
+  "reply with a number" on a step list is a category error:
   ```
   **Proposed options:**
 
