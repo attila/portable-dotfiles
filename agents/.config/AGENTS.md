@@ -257,6 +257,12 @@ Applies in chat as well as artefacts.
   (unit labels, decision numbers, artefact kinds) unless I asked about it.
   Dense, precise prose belongs only in records that agents and the archive read:
   ledgers, plans, specs, state files.
+- **Assume split attention.** I run several sessions at once and may arrive at
+  any message without the session's context. Expand every internal reference on
+  first use in each message — plan/requirement IDs (U7, R18), ticket numbers,
+  codenames — as "<id> (<what it is in plain words>)", or drop the ID and say
+  the thing. Lead with the decision or answer I need; zoom out before detail.
+  The escape phrase "go long" lifts the brevity cap for that reply only.
 - **No length ratchet.** Size each message or entry to its content, never to the
   length of the previous one of its kind. A class of output (changelog, ticket,
   reply) trending longer over time is drift — cut, don't match.
