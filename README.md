@@ -112,6 +112,55 @@ Node-based SDKs may bypass the sandbox proxy.
 Agents that understand repository-local skills can use
 `onboard-portable-dotfiles` to guide a selective setup.
 
+### Separate Personal and Work Homes
+
+The zsh module provides four launchers:
+
+| Launcher  | Profile                | Home                 |
+| --------- | ---------------------- | -------------------- |
+| `cc-lore` | `claude-code-personal` | `~/.claude-personal` |
+| `cc-work` | `claude-code-work`     | `~/.claude-work`     |
+| `cx-lore` | `codex-personal`       | `~/.codex-personal`  |
+| `cx-work` | `codex-work`           | `~/.codex-work`      |
+
+Each profile allows its own home and denies the other home for that agent and
+the legacy default home. Claude profiles also deny `~/.claude.pre-split-backup`.
+The launchers refuse missing homes. Shared toolchain grants, keychain access and
+repository instructions remain shared; these profiles separate agent homes, not
+every resource on the machine. Work profiles contain no organisation credentials
+or service-specific grants.
+
+After reviewing and stowing `agents`, `nono` and `zsh`, initialise fresh homes:
+
+```sh
+mkdir -m 700 -p ~/.claude-personal ~/.claude-work ~/.codex-personal ~/.codex-work
+for dir in ~/.claude-personal ~/.claude-work; do
+    ln -s "$HOME/.config/AGENTS.md" "$dir/CLAUDE.md"
+done
+for dir in ~/.codex-personal ~/.codex-work; do
+    ln -s "$HOME/.config/AGENTS.md" "$dir/AGENTS.md"
+    (set -C; printf '%s\n' 'cli_auth_credentials_store = "file"' \
+        'mcp_oauth_credentials_store = "file"' > "$dir/config.toml")
+done
+```
+
+The configuration writes refuse to overwrite existing files. Keep credentials,
+session history and mutable plugin state inside each home; install plugins and
+skills separately instead of linking back to a legacy home. Existing sessions
+are left where they are. Codex's file credential stores keep new Codex and MCP
+logins inside their respective homes.
+
+Open a new shell. Start `cc-lore` and `cc-work` to authenticate Claude in each
+home; use `cx-lore -- login` and `cx-work -- login` for Codex. A local home name
+does not select an online account or workspace: choose the intended identity
+during each login.
+
+Arguments before `--` go to nono; arguments after it go to the agent. For
+example, `cx-work -- --model gpt-5` passes a model option to Codex. Codex's own
+sandbox is disabled by these launchers because nono provides the boundary.
+Docker access is opt-in through `--extends docker-build` before `--`, and has
+the broader authority described above.
+
 ### Claude Background-Session Daemon
 
 Claude Code's `claude --bg` dispatches a background worker session, and

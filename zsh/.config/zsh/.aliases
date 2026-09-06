@@ -1,0 +1,37 @@
+# Usage: <alias> [nono args...] -- [agent args...]
+_nono_claude() {
+    local profile="$1" config_dir="$2"; shift 2
+    if [[ ! -d "$config_dir" ]]; then
+        print -u2 "refusing: CLAUDE_CONFIG_DIR does not exist: $config_dir"
+        return 1
+    fi
+    local nono_args=() agent_args=()
+    while (( $# )); do
+        if [[ "$1" == -- ]]; then shift; agent_args=("$@"); break; fi
+        nono_args+=("$1"); shift
+    done
+    CLAUDE_CONFIG_DIR="$config_dir" nono run --allow-cwd --profile "$profile" \
+        "${nono_args[@]}" -- claude "${agent_args[@]}"
+}
+
+_nono_codex() {
+    local profile="$1" codex_home="$2"; shift 2
+    if [[ ! -d "$codex_home" ]]; then
+        print -u2 "refusing: CODEX_HOME does not exist: $codex_home"
+        return 1
+    fi
+    local nono_args=() agent_args=()
+    while (( $# )); do
+        if [[ "$1" == -- ]]; then shift; agent_args=("$@"); break; fi
+        nono_args+=("$1"); shift
+    done
+    # nono provides the sandbox boundary; Codex must not nest its own sandbox.
+    CODEX_HOME="$codex_home" nono run --allow-cwd --profile "$profile" \
+        "${nono_args[@]}" -- codex --dangerously-bypass-approvals-and-sandbox \
+        "${agent_args[@]}"
+}
+
+alias cc-lore='_nono_claude claude-code-personal "$HOME/.claude-personal"'
+alias cc-work='_nono_claude claude-code-work "$HOME/.claude-work"'
+alias cx-lore='_nono_codex codex-personal "$HOME/.codex-personal"'
+alias cx-work='_nono_codex codex-work "$HOME/.codex-work"'

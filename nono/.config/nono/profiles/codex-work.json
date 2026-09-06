@@ -1,0 +1,11 @@
+{
+  "extends": ["codex-lore"],
+  "filesystem": {
+    "allow": ["$HOME/.codex-work"],
+    "deny": ["$HOME/.codex-personal", "$HOME/.codex"]
+  },
+  "meta": {
+    "name": "codex-work",
+    "description": "Codex CLI with shared dotfiles access for work"
+  }
+}

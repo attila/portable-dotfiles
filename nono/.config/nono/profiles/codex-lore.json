@@ -1,5 +1,8 @@
 {
   "extends": ["codex", "public-dotfiles-mirror", "root"],
+  "environment": {
+    "allow_vars": ["CODEX_HOME"]
+  },
   "filesystem": {
     "allow_file": [{
       "path": "$HOME/Library/Keychains/login.keychain-db",
