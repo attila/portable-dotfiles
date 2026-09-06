@@ -37,6 +37,6 @@ background-blur = 20
 # Window
 window-width = 160
 window-height = 45
-macos-non-native-fullscreen = false
+macos-non-native-fullscreen = true
 confirm-close-surface = false
 quit-after-last-window-closed = true
