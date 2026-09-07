@@ -124,11 +124,10 @@ The zsh module provides four launchers:
 | `cx-work` | `codex-work`           | `~/.codex-work`      |
 
 Each profile allows its own home and denies the other home for that agent and
-the legacy default home. Claude profiles also deny `~/.claude.pre-split-backup`.
-The launchers refuse missing homes. Shared toolchain grants, keychain access and
-repository instructions remain shared; these profiles separate agent homes, not
-every resource on the machine. Work profiles contain no organisation credentials
-or service-specific grants.
+the legacy default home. The launchers refuse missing homes. Shared toolchain
+grants, keychain access and repository instructions remain shared; these
+profiles separate agent homes, not every resource on the machine. Work profiles
+contain no organisation credentials or service-specific grants.
 
 After reviewing and stowing `agents`, `nono` and `zsh`, initialise fresh homes:
 
@@ -149,6 +148,16 @@ session history and mutable plugin state inside each home; install plugins and
 skills separately instead of linking back to a legacy home. Existing sessions
 are left where they are. Codex's file credential stores keep new Codex and MCP
 logins inside their respective homes.
+
+Stow the `claude` module once both Claude homes exist. It installs a
+`settings.json` into each home that wires the status line and a `PreToolUse`
+hook denying the `AskUserQuestion` tool, so the agent offers its options in chat
+instead. Stowing it before the homes exist symlinks the whole home directory,
+which leaves mutable agent state inside the repository.
+
+```sh
+stow claude
+```
 
 Open a new shell. Start `cc-lore` and `cc-work` to authenticate Claude in each
 home; use `cx-lore -- login` and `cx-work -- login` for Codex. A local home name
@@ -251,6 +260,7 @@ brew bundle
 stow ghostty
 stow git
 stow bin
+stow claude
 stow starship
 stow tmux
 stow zsh

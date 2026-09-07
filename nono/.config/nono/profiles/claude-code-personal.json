@@ -2,11 +2,7 @@
   "extends": ["claude-code-lore"],
   "filesystem": {
     "allow": ["$HOME/.claude-personal"],
-    "deny": [
-      "$HOME/.claude-work",
-      "$HOME/.claude",
-      "$HOME/.claude.pre-split-backup"
-    ]
+    "deny": ["$HOME/.claude-work", "$HOME/.claude"]
   },
   "meta": {
     "name": "claude-code-personal",
