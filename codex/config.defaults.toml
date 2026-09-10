@@ -1,0 +1,7 @@
+# Seeded into each Codex home by codex-home-install.
+#
+# Codex rewrites its own config.toml (codex mcp add, codex features enable, TUI
+# notice state), so this file is a one-time seed rather than a stow symlink
+# target: a stowed config.toml would take those writes into this repository.
+cli_auth_credentials_store = "file"
+mcp_oauth_credentials_store = "file"

@@ -177,7 +177,6 @@
       "registry.nono.sh",
       "*.npmjs.org",
       "www.npmjs.com",
-      "cdn.playwright.dev",
       "pypi.org",
       "files.pythonhosted.org",
       "*.snapcraft.io",

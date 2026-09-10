@@ -1,0 +1,2 @@
+# Keep the seed input out of $HOME; codex-home-install reads it from the repo.
+^/config\.defaults\.toml$

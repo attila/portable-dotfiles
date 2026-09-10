@@ -13,7 +13,7 @@ edits, support requests, and feature requests are not accepted.
 | `agents`        | Shared agent instructions exposed through Codex and Claude module links.                                        |
 | `bin`           | Small user commands, including NVMe snapshot trend reporting.                                                   |
 | `claude`        | [Claude Code](https://code.claude.com/docs/en/overview) instruction link pointing at the shared agent guidance. |
-| `codex`         | [Codex](https://github.com/openai/codex) instruction link pointing at the shared agent guidance.                |
+| `codex`         | [Codex](https://github.com/openai/codex) instruction link plus the defaults each Codex home is seeded from.     |
 | `dprint`        | [dprint](https://dprint.dev/) formatter configuration used by the repository.                                   |
 | `ghostty`       | [Ghostty](https://ghostty.org/) terminal settings.                                                              |
 | `git`           | Git ignore defaults and commit message template.                                                                |
@@ -129,27 +129,33 @@ grants, keychain access and repository instructions remain shared; these
 profiles separate agent homes, not every resource on the machine. Work profiles
 contain no organisation credentials or service-specific grants.
 
-After reviewing and stowing `agents`, `nono` and `zsh`, initialise fresh homes:
+After reviewing and stowing `agents`, `nono` and `zsh`, initialise fresh homes.
+The Claude homes are created by hand:
 
 ```sh
-mkdir -m 700 -p ~/.claude-personal ~/.claude-work ~/.codex-personal ~/.codex-work
+mkdir -m 700 -p ~/.claude-personal ~/.claude-work
 for dir in ~/.claude-personal ~/.claude-work; do
     ln -s "$HOME/.config/AGENTS.md" "$dir/CLAUDE.md"
 done
-for dir in ~/.codex-personal ~/.codex-work; do
-    ln -s "$HOME/.config/AGENTS.md" "$dir/AGENTS.md"
-    (set -C; printf '%s\n' 'cli_auth_credentials_store = "file"' \
-        'mcp_oauth_credentials_store = "file"' > "$dir/config.toml")
-done
 ```
 
-The configuration writes refuse to overwrite existing files. Keep credentials,
-session history and mutable plugin state inside each home; install plugins and
-skills separately instead of linking back to a legacy home. Existing sessions
-are left where they are. Codex's file credential stores keep new Codex and MCP
-logins inside their respective homes.
+The Codex homes come from a helper the zsh module defines:
 
-Stow the `claude` module once both Claude homes exist. It installs a
+```sh
+codex-home-install
+```
+
+It creates `~/.codex-personal` and `~/.codex-work` with mode `700`, then seeds
+each `config.toml` from `codex/config.defaults.toml` when the home has none. An
+existing `config.toml` is left alone: Codex writes that file itself, so it is
+seeded once and belongs to Codex from then on. Its file credential stores keep
+new Codex and MCP logins inside their respective homes.
+
+Keep credentials, session history and mutable plugin state inside each home;
+install plugins and skills separately instead of linking back to a legacy home.
+Existing sessions are left where they are.
+
+Stow the `claude` and `codex` modules once the homes exist. `claude` installs a
 `settings.json` into each home that wires the status line and a `PreToolUse`
 hook denying the `AskUserQuestion` tool, so the agent offers its options in chat
 instead. Stowing it before the homes exist symlinks the whole home directory,
@@ -157,6 +163,7 @@ which leaves mutable agent state inside the repository.
 
 ```sh
 stow claude
+stow codex
 ```
 
 Open a new shell. Start `cc-lore` and `cc-work` to authenticate Claude in each

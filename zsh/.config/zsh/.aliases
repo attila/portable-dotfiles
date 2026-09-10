@@ -31,6 +31,35 @@ _nono_codex() {
         "${agent_args[@]}"
 }
 
+# Codex writes its own config.toml, so each home is seeded once instead of
+# stowed. Keep the home list in sync with the cx-* aliases below.
+codex-home-install() {
+    local defaults="${${(%):-%x}:A:h:h:h:h}/codex/config.defaults.toml"
+    local home_dir
+
+    if [[ ! -r $defaults ]]; then
+        print -u2 "codex-home-install: missing defaults: $defaults"
+        return 1
+    fi
+
+    for home_dir in "$HOME/.codex-personal" "$HOME/.codex-work"; do
+        if [[ -L $home_dir ]]; then
+            print -u2 "codex-home-install: refusing: $home_dir is a symlink; unstow the codex module, then rerun"
+            return 1
+        fi
+
+        command mkdir -m 700 -p "$home_dir" || return
+
+        if [[ -e $home_dir/config.toml ]]; then
+            print -u2 "codex-home-install: kept existing $home_dir/config.toml"
+        else
+            command cp -- "$defaults" "$home_dir/config.toml" || return
+            command chmod 600 "$home_dir/config.toml"
+            print -u2 "codex-home-install: seeded $home_dir/config.toml"
+        fi
+    done
+}
+
 alias cc-lore='_nono_claude claude-code-personal "$HOME/.claude-personal"'
 alias cc-work='_nono_claude claude-code-work "$HOME/.claude-work"'
 alias cx-lore='_nono_codex codex-personal "$HOME/.codex-personal"'

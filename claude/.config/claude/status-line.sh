@@ -71,7 +71,7 @@ arrow() {
   fi
 }
 
-# fish-style directory: ~/Projects/clients/acmeinc/slp → ~/P/c/b/slp
+# fish-style directory: ~/Projects/clients/acme/slp → ~/P/c/a/slp
 short_dir=${dir/#$HOME/\~}
 short_dir=$(sed -E 's|([^/])[^/]*/|\1/|g' <<<"$short_dir")
 
