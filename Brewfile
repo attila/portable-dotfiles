@@ -80,7 +80,7 @@ brew "xz"
 brew "zsh-completions"
 
 # Terminal-based AI coding assistant
-cask "claude-code"
+cask "claude-code@latest"
 # OpenAI's coding agent that runs in your terminal
 cask "codex"
 
