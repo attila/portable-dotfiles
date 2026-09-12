@@ -61,19 +61,33 @@ When the user wants nono profiles:
 1. Confirm nono is installed.
 2. Ask which agent CLIs they use: Codex, Claude Code, Crush, or another tool.
 3. Recommend only the matching profiles.
-4. Explain profile inheritance before changing grants.
-5. Tell the user to adapt machine-local placeholders such as `/Users/username`
+4. Have them install the nono package behind each agent profile they want, since
+   the profiles here extend package-supplied ones:
+
+   ```sh
+   nono pull nolabs-ai/claude
+   nono pull nolabs-ai/codex
+   ```
+
+   `nolabs-ai/claude` supplies `claude`, also reachable as `claude-code`, which
+   `claude-code-lore.json` extends. `nolabs-ai/codex` supplies `codex`, which
+   `codex-lore.json` extends. `crush-cerebras` extends nono's built-in `default`
+   and needs no package. Tell them to keep packages current with `nono outdated`
+   and `nono update`: nono rejects an unknown key outright, so a package profile
+   left behind a nono release fails every profile that extends it.
+5. Explain profile inheritance before changing grants.
+6. Tell the user to adapt machine-local placeholders such as `/Users/username`
    where exact macOS seatbelt paths are required.
-6. Configure Git identity and GPG signing outside the sandbox before relying on
+7. Configure Git identity and GPG signing outside the sandbox before relying on
    signed commits inside it.
-7. Store API keys in nono's credential store or the OS secret store. Do not put
+8. Store API keys in nono's credential store or the OS secret store. Do not put
    real tokens in profile JSON.
-8. Use profile `network.credentials`, `network.custom_credentials`, or
+9. Use profile `network.credentials`, `network.custom_credentials`, or
    `env_credentials` only after the credential source and intended injection
    path are clear.
-9. Stow `zsh` when the Node proxy shim should be active. The zsh PATH wiring is
-   part of the nono helper contract.
-10. Run the helper smoke test after stowing `nono` or changing zsh PATH wiring:
+10. Stow `zsh` when the Node proxy shim should be active. The zsh PATH wiring is
+    part of the nono helper contract.
+11. Run the helper smoke test after stowing `nono` or changing zsh PATH wiring:
 
     ```sh
     nono/.local/share/nono-helpers/smoke-test.sh

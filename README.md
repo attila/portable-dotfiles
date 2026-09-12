@@ -42,6 +42,26 @@ keychain access, and macOS seatbelt rules. The included profiles cover a shared
 base profile, public-dotfiles access, and agent-specific profiles for Codex,
 Claude Code, and Crush.
 
+### nono Packages
+
+The agent profiles here extend profiles supplied by nono packages, so install
+the package for each agent CLI you use before those profiles will resolve:
+
+```sh
+nono pull nolabs-ai/claude
+nono pull nolabs-ai/codex
+```
+
+`nolabs-ai/claude` installs a profile named `claude`, also reachable as
+`claude-code`, which `claude-code-lore.json` extends. `nolabs-ai/codex` installs
+`codex`, which `codex-lore.json` extends. The `crush-cerebras` profile builds on
+nono's built-in `default` and needs no package.
+
+Keep the packages current with `nono outdated` and `nono update`. A package
+profile can fall behind a nono release, and nono rejects an unknown key
+outright, so one stale key in a package profile fails every profile that extends
+it.
+
 ### Docker Daemon Access
 
 > **Warning:** The standalone `docker-build` profile grants access to the Docker
@@ -74,8 +94,6 @@ software can call the daemon socket directly.
 
 Before using the profiles, adapt the machine-local pieces:
 
-- Install the matching nono package profiles for the agent CLIs you use, such as
-  `codex`, `claude-code`, and `default`.
 - Update absolute macOS seatbelt paths such as `/Users/username` to your actual
   home directory when a literal home-directory grant is required.
 - Configure Git identity and signing outside the sandbox, then make sure the
