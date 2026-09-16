@@ -1,7 +1,10 @@
 {
   "extends": ["claude-code-lore"],
   "filesystem": {
-    "allow": ["$HOME/.claude-work"],
+    "allow": [
+      "$HOME/.claude-work",
+      "$HOME/portable-dotfiles/claude/.claude-work"
+    ],
     "deny": ["$HOME/.claude-personal", "$HOME/.claude"]
   },
   "meta": {
