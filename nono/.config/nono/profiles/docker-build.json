@@ -36,6 +36,7 @@
   },
   "network": {
     "allow_domain": [
+      "docs.brew.sh",
       "production.cloudflare.docker.com",
       "auth.docker.io",
       "registry-1.docker.io"

@@ -138,6 +138,7 @@
   },
   "network": {
     "allow_domain": [
+      "docs.brew.sh",
       "*.claude.site",
       "claude.site",
       "*.claudeusercontent.com",
@@ -208,6 +209,7 @@
       "https://crt.sh",
       "https://docs.rs",
       "https://dprint.dev",
+      "https://docs.brew.sh",
       "https://docs.github.com",
       "https://gist.github.com",
       "https://github.blog",
