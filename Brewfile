@@ -66,6 +66,8 @@ brew "ollama", restart_service: :changed
 brew "anomalyco/tap/opencode"
 # Swiss-army knife of markup format conversion
 brew "pandoc"
+# PDF rendering library (based on the xpdf-3.0 code base)
+brew "poppler"
 # Password generator
 brew "pwgen"
 # Utility that provides fast incremental file transfer
