@@ -28,6 +28,7 @@ _nono_codex() {
     # nono provides the sandbox boundary; Codex must not nest its own sandbox.
     CODEX_HOME="$codex_home" nono run --allow-cwd --profile "$profile" \
         "${nono_args[@]}" -- codex --dangerously-bypass-approvals-and-sandbox \
+        --no-daemon \
         "${agent_args[@]}"
 }
 

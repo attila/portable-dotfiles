@@ -31,7 +31,7 @@ for launcher in cc-lore cc-work cx-lore cx-work; do
         cx-lore) expected_profile=codex-personal; expected_home="$HOME/.codex-personal" ;;
         cx-work) expected_profile=codex-work; expected_home="$HOME/.codex-work" ;;
     esac
-    [[ $launcher != cx-* ]] || expected_agent=(codex --dangerously-bypass-approvals-and-sandbox)
+    [[ $launcher != cx-* ]] || expected_agent=(codex --dangerously-bypass-approvals-and-sandbox --no-daemon)
     result_status=0
     eval "$launcher --extends docker-build -- 'prompt with spaces'" || result_status=$?
     [[ $result_status == 17 ]] || exit 1
