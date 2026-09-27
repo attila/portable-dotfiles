@@ -138,6 +138,8 @@
   },
   "network": {
     "allow_domain": [
+      "aw-tools.github.io",
+      "aw.tools",
       "docs.brew.sh",
       "*.claude.site",
       "claude.site",
@@ -196,6 +198,8 @@
   "open_urls": {
     "allow_localhost": true,
     "allow_origins": [
+      "https://aw-tools.github.io",
+      "https://aw.tools",
       "https://api.anthropic.com",
       "https://docs.anthropic.com",
       "https://chatgpt.com",
