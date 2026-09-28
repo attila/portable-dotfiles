@@ -10,5 +10,8 @@
   "meta": {
     "name": "claude-code-personal",
     "description": "Claude Code with shared dotfiles access for personal work"
+  },
+  "network": {
+    "open_port": [1111]
   }
 }
