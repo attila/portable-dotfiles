@@ -37,7 +37,12 @@
     "description": "Crush CLI with Cerebras API access through nono credential proxy"
   },
   "network": {
-    "allow_domain": ["api.cerebras.ai", "charm.land"],
+    "allow_domain": [
+      "api.cerebras.ai",
+      "charm.land",
+      "getzola.org",
+      "www.getzola.org"
+    ],
     "credentials": ["cerebras"],
     "custom_credentials": {
       "cerebras": {
