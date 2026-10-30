@@ -12,7 +12,12 @@
     "description": "Claude Code with shared dotfiles access for personal work"
   },
   "network": {
-    "allow_domain": ["getzola.org", "www.getzola.org"],
+    "allow_domain": [
+      "getzola.org",
+      "ico.org.uk",
+      "news.ycombinator.com",
+      "www.getzola.org"
+    ],
     "open_port": [1111]
   }
 }
