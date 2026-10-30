@@ -1,5 +1,5 @@
 {
-  "extends": ["codex", "public-dotfiles-mirror", "root"],
+  "extends": ["nolabs-ai/codex", "public-dotfiles-mirror", "root"],
   "environment": {
     "allow_vars": ["CODEX_HOME"]
   },
