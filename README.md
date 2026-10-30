@@ -147,6 +147,11 @@ grants, keychain access and repository instructions remain shared; these
 profiles separate agent homes, not every resource on the machine. Work profiles
 contain no organisation credentials or service-specific grants.
 
+The `claude` profile keeps Claude Code's temporary files under `~/.claude/tmp`,
+inside the denied legacy home, so each Claude profile moves `CLAUDE_CODE_TMPDIR`
+and `TMPDIR` to `tmp/` inside its own home. Without that override, Claude Code
+fails at startup with `EPERM`.
+
 After reviewing and stowing `agents`, `nono` and `zsh`, initialise fresh homes.
 The Claude homes are created by hand:
 

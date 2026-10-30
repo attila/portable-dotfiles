@@ -7,6 +7,12 @@
     ],
     "deny": ["$HOME/.claude-work", "$HOME/.claude"]
   },
+  "environment": {
+    "set_vars": {
+      "CLAUDE_CODE_TMPDIR": "$HOME/.claude-personal/tmp",
+      "TMPDIR": "$HOME/.claude-personal/tmp/claude-$UID"
+    }
+  },
   "meta": {
     "name": "claude-code-personal",
     "description": "Claude Code with shared dotfiles access for personal work"
