@@ -193,6 +193,8 @@
       "tuist.dev",
       "docs.tuist.dev",
       "*.blob.core.windows.net",
+      "wiz.io",
+      "app.wiz.io",
       "zod.dev"
     ],
     "open_port": [11434]
@@ -237,6 +239,8 @@
       "https://snapcraft.io",
       "https://stackoverflow.com",
       "https://docs.tuist.dev",
+      "https://wiz.io",
+      "https://app.wiz.io",
       "https://zod.dev"
     ]
   },
