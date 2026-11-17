@@ -194,6 +194,7 @@
       "docs.tuist.dev",
       "*.blob.core.windows.net",
       "wiz.io",
+      "*.app.wiz.io",
       "app.wiz.io",
       "zod.dev"
     ],
