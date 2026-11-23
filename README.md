@@ -42,6 +42,10 @@ keychain access, and macOS seatbelt rules. The included profiles cover a shared
 base profile, public-dotfiles access, and agent-specific profiles for Codex,
 Claude Code, and Crush.
 
+`claude-code-lore.json` and `codex-lore.json` grant write access to
+`~/lore-patterns`, the pattern repository that lore commits to when an agent
+submits a pattern. Change the path if your pattern repository lives elsewhere.
+
 ### nono Packages
 
 The agent profiles here extend profiles supplied by nono packages, so install

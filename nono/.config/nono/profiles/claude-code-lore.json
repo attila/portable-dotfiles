@@ -4,6 +4,7 @@
     "allow_vars": ["CLAUDE_CONFIG_DIR"]
   },
   "filesystem": {
+    "allow": ["$HOME/lore-patterns"],
     "read": ["$HOME/portable-dotfiles/claude", "$HOME/.config/claude"]
   },
   "meta": {

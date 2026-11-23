@@ -4,6 +4,7 @@
     "allow_vars": ["CODEX_HOME"]
   },
   "filesystem": {
+    "allow": ["$HOME/lore-patterns"],
     "allow_file": [{
       "path": "$HOME/Library/Keychains/login.keychain-db",
       "when": "macos"
